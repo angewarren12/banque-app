@@ -1,3 +1,6 @@
-# https://www.robotstxt.org/robotstxt.html
+# Configuration pour les robots d'indexation
 User-agent: *
-Disallow:
+Disallow: /
+
+# Cette application bancaire est une démonstration
+# et ne doit pas être indexée par les moteurs de recherche

@@ -1,70 +1,217 @@
-# Getting Started with Create React App
+# 🏦 Application Bancaire BNP Paribas
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Une application bancaire moderne et responsive développée avec React, simulant l'interface de BNP Paribas avec toutes les fonctionnalités essentielles d'une banque en ligne.
 
-## Available Scripts
+## ✨ Fonctionnalités
 
-In the project directory, you can run:
+### 🔐 Authentification
 
-### `npm start`
+- **Connexion en deux étapes** : Numéro client puis code secret
+- **Clavier virtuel** pour la saisie sécurisée du mot de passe
+- **Gestion des erreurs** et messages d'information
+- **Intégration Supabase Auth** pour l'authentification
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 📊 Dashboard Principal
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Solde total** avec évolution mensuelle (+2.5%)
+- **Actions rapides** : Virement, Paiement, Épargne, Bénéficiaires
+- **Comptes multiples** avec gestion des soldes
+- **Dernières transactions** avec statuts en temps réel
+- **Épargne & Investissements** : Livret A, PEA, LDDS
+- **Conseiller client** avec informations de contact
 
-### `npm test`
+### 💰 Gestion des Virements
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Création de bénéficiaires** avec validation IBAN
+- **Virements sécurisés** avec limite de 9 893€
+- **Statuts de validation** : En cours, Terminé, En attente
+- **Notifications automatiques** pour les frais de conformité
+- **Historique complet** des opérations
 
-### `npm run build`
+### 📱 Interface Mobile
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Design responsive** optimisé pour mobile
+- **Menu de navigation** fixe en bas d'écran
+- **Animations fluides** et transitions
+- **Interface tactile** avec feedback haptique
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 🎨 Design & UX
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Identité visuelle BNP Paribas** avec le vert #008854
+- **Icônes Font Awesome** pour une expérience cohérente
+- **Thème moderne** avec glassmorphism et ombres
+- **Accessibilité** optimisée
 
-### `npm run eject`
+## 🛠️ Technologies Utilisées
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Frontend** : React 18, CSS3, JavaScript ES6+
+- **Base de données** : Supabase (PostgreSQL)
+- **Authentification** : Supabase Auth
+- **Icônes** : Font Awesome
+- **Routing** : React Router DOM
+- **Déploiement** : Prêt pour Vercel/Netlify
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 📋 Prérequis
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Node.js (version 16 ou supérieure)
+- npm ou yarn
+- Compte Supabase (gratuit)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🚀 Installation
 
-## Learn More
+1. **Cloner le repository**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+git clone https://github.com/votre-username/banque-app.git
+cd banque-app
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. **Installer les dépendances**
 
-### Code Splitting
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+3. **Configuration Supabase**
 
-### Analyzing the Bundle Size
+   - Créez un projet sur [Supabase](https://supabase.com)
+   - Copiez votre Project URL et API Key
+   - Mettez à jour `src/config/supabase.js`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+4. **Configuration de la base de données**
 
-### Making a Progressive Web App
+   - Exécutez les scripts SQL dans le dossier `database/`
+   - Suivez le guide `SUPABASE_SETUP.md`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+5. **Lancer l'application**
 
-### Advanced Configuration
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+L'application sera accessible sur `http://localhost:3000`
 
-### Deployment
+## 📁 Structure du Projet
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
+banque-app/
+├── src/
+│   ├── components/          # Composants React
+│   │   ├── LoginPage.js     # Page de connexion
+│   │   ├── Dashboard.js     # Dashboard principal
+│   │   ├── VirementPage.js  # Gestion des virements
+│   │   └── ...
+│   ├── services/            # Services Supabase
+│   │   ├── authService.js   # Authentification
+│   │   ├── comptesService.js # Gestion des comptes
+│   │   └── ...
+│   ├── config/
+│   │   └── supabase.js      # Configuration Supabase
+│   └── ...
+├── database/                # Scripts SQL et documentation
+├── public/                  # Assets statiques
+└── README.md
+```
 
-### `npm run build` fails to minify
+## 🔧 Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Variables d'environnement
+
+Créez un fichier `.env` à la racine du projet :
+
+```env
+REACT_APP_SUPABASE_URL=votre_project_url
+REACT_APP_SUPABASE_ANON_KEY=votre_api_key
+```
+
+### Base de données
+
+Le projet utilise Supabase avec les tables suivantes :
+
+- `profiles` : Profils utilisateurs
+- `comptes` : Comptes bancaires
+- `transactions` : Historique des transactions
+- `virements` : Virements effectués
+- `beneficiaires` : Bénéficiaires enregistrés
+- `notifications` : Notifications système
+
+## 👤 Compte de Test
+
+Pour tester l'application, utilisez ces identifiants :
+
+- **Numéro client** : `3961515267`
+- **Code secret** : `52302`
+
+## 🎯 Fonctionnalités Détaillées
+
+### Authentification
+
+- Validation du numéro client
+- Vérification du code secret
+- Gestion des comptes verrouillés
+- Session persistante
+
+### Dashboard
+
+- Affichage du solde total en temps réel
+- Actions rapides pour les opérations courantes
+- Historique des dernières transactions
+- Gestion des comptes multiples
+
+### Virements
+
+- Création et gestion des bénéficiaires
+- Validation IBAN en temps réel
+- Limites de sécurité configurées
+- Notifications automatiques
+
+### Épargne
+
+- Gestion des livrets (A, LDDS)
+- Plan d'épargne en actions (PEA)
+- Calcul des intérêts et évolutions
+- Interface de gestion dédiée
+
+## 🚀 Déploiement
+
+### Vercel (Recommandé)
+
+1. Connectez votre repository GitHub à Vercel
+2. Configurez les variables d'environnement
+3. Déployez automatiquement
+
+### Netlify
+
+1. Connectez votre repository GitHub à Netlify
+2. Configurez les variables d'environnement
+3. Déployez avec `npm run build`
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`)
+3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrez une Pull Request
+
+## 📝 Licence
+
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+## 🆘 Support
+
+Pour toute question ou problème :
+
+- Ouvrez une issue sur GitHub
+- Consultez la documentation Supabase
+- Vérifiez les logs de la console
+
+## 🙏 Remerciements
+
+- BNP Paribas pour l'inspiration du design
+- Supabase pour l'infrastructure backend
+- React et la communauté open source
+
+---
+
+**Développé avec ❤️ pour l'innovation bancaire**
