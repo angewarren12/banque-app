@@ -141,10 +141,10 @@ const Dashboard = () => {
 
   // Données du conseiller client
   const conseillerClient = {
-    name: 'Marie Dubois',
+    name: 'Bernado Alfred',
     role: 'Conseiller Client',
-    phone: '01 42 34 56 78',
-    email: 'marie.dubois@bnpparibas.fr',
+    phone: '',
+    email: 'bernadoalfred23@gmail.com',
     avatar: 'https://cdn-icons-png.flaticon.com/512/6676/6676023.png'
   };
 
@@ -262,7 +262,7 @@ const Dashboard = () => {
           <p>Voici un aperçu de vos finances</p>
           <div className="login-info">
             <span className="last-login">Dernière connexion : {getCurrentDateTime()}</span>
-            <span className="location">📍 {user?.adresse || 'Paris, France'}</span>
+            <span className="location">📍 {user?.adresse || 'Italy - Bologne'}</span>
             {isRefreshing && (
               <span className="refreshing-indicator">
                 <i className="fas fa-sync-alt fa-spin"></i> Mise à jour...
@@ -459,9 +459,6 @@ const Dashboard = () => {
             <h4>{conseillerClient.name}</h4>
             <span className="conseiller-role">{conseillerClient.role}</span>
             <div className="conseiller-contact">
-              <span className="contact-item">
-                <i className="fas fa-phone"></i> {conseillerClient.phone}
-              </span>
               <span className="contact-item">
                 <i className="fas fa-envelope"></i> {conseillerClient.email}
               </span>
