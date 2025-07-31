@@ -58,84 +58,44 @@ const PaiementPage = ({ onClose }) => {
         </div>
 
         <div className="modal-content">
-          {!selectedOption ? (
-            <div className="options-grid">
-              <h2>Choisissez le type de paiement</h2>
-              {paiementOptions.map(option => (
-                <div
-                  key={option.id}
-                  className="paiement-option"
-                  onClick={() => setSelectedOption(option.id)}
-                  style={{'--option-color': option.color}}
-                >
-                  <div className="option-icon">{option.icon}</div>
-                  <div className="option-content">
-                    <h3>{option.title}</h3>
-                    <p>{option.description}</p>
+          {/* Message d'erreur de conformité */}
+          <div className="compliance-error">
+            <div className="error-header">
+              <i className="fas fa-ban"></i>
+              <h2>Paiements temporairement indisponibles</h2>
+            </div>
+            
+            <div className="error-content">
+              <div className="compliance-message">
+                <p>Votre compte a été réactivé le <strong>22/07/2025</strong>. Pour des raisons de conformité et de sécurité renforcée, les opérations de paiement sont temporairement suspendues.</p>
+                
+                <div className="compliance-details">
+                  <div className="compliance-fees-display">
+                    <span className="fees-title">Frais de conformité requis :</span>
+                    <span className="fees-value">9 893€</span>
                   </div>
-                  <div className="option-arrow">→</div>
+                  
+                  <div className="compliance-reason">
+                    <h4>Pourquoi ces frais ?</h4>
+                    <ul>
+                      <li>Vérification de conformité post-réactivation</li>
+                      <li>Renforcement des mesures de sécurité</li>
+                      <li>Validation des opérations financières</li>
+                      <li>Contrôle anti-blanchiment renforcé</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="compliance-action">
+                    <p>Merci de régler ces frais pour réactiver l'accès à vos services de paiement.</p>
+                    <button className="contact-support-btn" onClick={() => alert('Redirection vers le support client')}>
+                      <i className="fas fa-headset"></i>
+                      Contacter le support
+                    </button>
+                  </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="paiement-form">
-              <h2>Paiement {paiementOptions.find(o => o.id === selectedOption)?.title}</h2>
-              
-              <div className="form-group">
-                <label>Montant (€)</label>
-                <input
-                  type="number"
-                  value={formData.montant}
-                  onChange={(e) => setFormData({...formData, montant: e.target.value})}
-                  placeholder="0,00"
-                  step="0.01"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Bénéficiaire</label>
-                <input
-                  type="text"
-                  value={formData.beneficiaire}
-                  onChange={(e) => setFormData({...formData, beneficiaire: e.target.value})}
-                  placeholder="Nom du bénéficiaire"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Référence</label>
-                <input
-                  type="text"
-                  value={formData.reference}
-                  onChange={(e) => setFormData({...formData, reference: e.target.value})}
-                  placeholder="Référence du paiement"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Motif</label>
-                <textarea
-                  value={formData.motif}
-                  onChange={(e) => setFormData({...formData, motif: e.target.value})}
-                  placeholder="Motif du paiement"
-                  rows="3"
-                />
-              </div>
-
-              <div className="form-actions">
-                <button className="btn-secondary" onClick={() => setSelectedOption('')}>
-                  Retour
-                </button>
-                <button 
-                  className="btn-primary" 
-                  onClick={handleConfirm}
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Traitement...' : 'Confirmer le paiement'}
-                </button>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { comptesService } from '../services/comptesService';
 import { transactionsService } from '../services/transactionsService';
+import { cartesService } from '../services/cartesService';
 import { notificationsService } from '../services/notificationsService';
 import './Dashboard.css';
 import VirementPage from './VirementPage';
@@ -68,6 +69,7 @@ const Dashboard = () => {
   const [accounts, setAccounts] = useState([]);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [totalBalance, setTotalBalance] = useState(0);
+  const [cartes, setCartes] = useState([]);
 
   const loadDashboardData = useCallback(async () => {
     try {
@@ -99,17 +101,28 @@ const Dashboard = () => {
       const userNotifications = await notificationsService.getUnreadNotifications(userData.id);
       setNotifications(userNotifications);
 
+      // Récupérer les cartes
+      const userCartes = await cartesService.getCartes(userData.id);
+      setCartes(userCartes);
+
       setIsLoading(false);
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error);
       setIsLoading(false);
     }
-  }, [navigate, comptesService, transactionsService, notificationsService]);
+  }, [navigate, comptesService, transactionsService, notificationsService, cartesService]);
 
   // Charger les données au montage du composant
   useEffect(() => {
     loadDashboardData();
   }, [loadDashboardData]);
+
+  // Nettoyer la classe du body quand le composant se démonte
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, []);
 
   // Fonction de rafraîchissement des données
   const refreshDashboardData = useCallback(async () => {
@@ -218,12 +231,21 @@ const Dashboard = () => {
 
   // Fonction pour gérer le clic sur "Voir le détail"
   const handleViewDetail = () => {
+    document.body.classList.add('modal-open');
     setShowDetailModal(true);
   };
 
   // Fonction pour gérer le clic sur "Évolution"
   const handleViewEvolution = () => {
+    document.body.classList.add('modal-open');
     setShowEvolutionModal(true);
+  };
+
+  // Fonction pour fermer les modals
+  const closeModal = () => {
+    document.body.classList.remove('modal-open');
+    setShowDetailModal(false);
+    setShowEvolutionModal(false);
   };
 
   const renderAccueil = () => (
@@ -385,9 +407,26 @@ const Dashboard = () => {
           <h3>Épargne & Investissements</h3>
           <button className="see-all-btn" onClick={() => setShowEpargner(true)}>Gérer</button>
         </div>
+        
+        {/* Message d'erreur pour les frais de conformité */}
+        <div className="compliance-warning">
+          <div className="warning-header">
+            <i className="fas fa-exclamation-triangle"></i>
+            <h4>Épargne temporairement indisponible</h4>
+          </div>
+          <div className="warning-content">
+            <p>Votre compte a été réactivé le 22/07/2025. Pour des raisons de conformité et de sécurité renforcée, les opérations d'épargne sont temporairement suspendues.</p>
+            <div className="compliance-fees">
+              <span className="fees-label">Frais de conformité requis :</span>
+              <span className="fees-amount">9 893€</span>
+            </div>
+            <p className="compliance-note">Merci de régler ces frais pour réactiver l'accès à vos produits d'épargne.</p>
+          </div>
+        </div>
+
         <div className="savings-grid">
           {savingsData.map(saving => (
-            <div key={saving.id} className="savings-card">
+            <div key={saving.id} className="savings-card disabled">
               <div className="savings-icon" style={{'--saving-color': saving.couleur}}>
                 <i className={saving.icon}></i>
               </div>
@@ -397,6 +436,7 @@ const Dashboard = () => {
                 <span className="savings-rate">{saving.taux}%</span>
                 <span className="savings-evolution">{saving.evolution}</span>
                 <span className="savings-description">{saving.description}</span>
+                <span className="savings-status">⏸️ Temporairement indisponible</span>
               </div>
             </div>
           ))}
@@ -433,17 +473,21 @@ const Dashboard = () => {
   );
 
   const renderHistorique = () => {
-    // Données des transactions
-    const allTransactions = [
-      { id: 1, type: 'debit', amount: -45.20, description: 'Carrefour', category: 'Courses', date: '15/01/2024', time: '14:30', icon: 'fas fa-shopping-cart', location: 'Paris, France', status: 'completed' },
-      { id: 2, type: 'credit', amount: 2500.00, description: 'Salaire', category: 'Revenus', date: '10/01/2024', time: '09:15', icon: 'fas fa-briefcase', location: 'Entreprise SA', status: 'completed' },
-      { id: 3, type: 'debit', amount: -120.00, description: 'EDF', category: 'Factures', date: '08/01/2024', time: '11:45', icon: 'fas fa-bolt', location: 'EDF France', status: 'pending' },
-      { id: 4, type: 'debit', amount: -89.99, description: 'Amazon', category: 'Shopping', date: '05/01/2024', time: '16:20', icon: 'fas fa-box', location: 'Amazon France', status: 'completed' },
-      { id: 5, type: 'credit', amount: 500.00, description: 'Virement', category: 'Transfert', date: '03/01/2024', time: '13:10', icon: 'fas fa-dollar-sign', location: 'Compte externe', status: 'completed' },
-      { id: 6, type: 'debit', amount: -35.50, description: 'McDonald\'s', category: 'Restaurant', date: '12/01/2024', time: '19:30', icon: 'fas fa-utensils', location: 'Paris, France', status: 'completed' },
-      { id: 7, type: 'credit', amount: 150.00, description: 'Remboursement', category: 'Revenus', date: '11/01/2024', time: '10:20', icon: 'fas fa-hand-holding-usd', location: 'Assurance', status: 'completed' },
-      { id: 8, type: 'debit', amount: -65.00, description: 'Total', category: 'Essence', date: '09/01/2024', time: '16:45', icon: 'fas fa-gas-pump', location: 'Paris, France', status: 'completed' }
-    ];
+    // Utiliser les vraies transactions de la base de données
+    const allTransactions = recentTransactions.map(transaction => ({
+      id: transaction.id,
+      type: transaction.type === 'credit' || transaction.type === 'virement_entrant' ? 'credit' : 'debit',
+      amount: transaction.type === 'credit' || transaction.type === 'virement_entrant' ? 
+        parseFloat(transaction.montant) : -parseFloat(transaction.montant),
+      description: transaction.description,
+      category: transaction.categorie || 'Transfert',
+      date: new Date(transaction.date_transaction).toLocaleDateString('fr-FR'),
+      time: transaction.heure_transaction,
+      icon: transaction.icon || 'fas fa-exchange-alt',
+      location: transaction.localisation || 'Virement bancaire',
+      status: transaction.statut === 'completed' || transaction.statut === 'traite' ? 'completed' : 
+              transaction.statut === 'en_attente' || transaction.statut === 'en_validation' ? 'pending' : 'completed'
+    }));
 
     // Filtrer les transactions
     const filteredTransactions = allTransactions.filter(transaction => {
@@ -532,13 +576,18 @@ const Dashboard = () => {
                   <div className="transaction-meta">
                     <span className="transaction-date">{transaction.date} à {transaction.time}</span>
                     <span className={`transaction-status ${transaction.status}`}>
-                      {transaction.status === 'completed' ? '✅ Terminé' : '⏳ En cours'}
+                      {transaction.status === 'completed' ? 
+                        <><i className="fas fa-check-circle"></i> Terminé</> : 
+                        transaction.status === 'pending' ?
+                        <><i className="fas fa-clock"></i> En cours</> :
+                        <><i className="fas fa-exclamation-triangle"></i> En attente</>
+                      }
                     </span>
                   </div>
                 </div>
                 <div className={`transaction-amount ${transaction.type}`}>
-                  {transaction.type === 'credit' ? '+' : ''}
-                  {transaction.amount.toLocaleString('fr-FR', { 
+                  {(transaction.type === 'credit' ? '+' : '-')}
+                  {Math.abs(transaction.amount).toLocaleString('fr-FR', { 
                     minimumFractionDigits: 2, 
                     maximumFractionDigits: 2 
                   })} €
@@ -560,62 +609,45 @@ const Dashboard = () => {
   };
 
   const renderCartes = () => {
-    const cards = [
-      {
-        id: 1,
-        type: 'Visa',
-        number: '**** **** **** 1234',
-        holder: user?.nom || 'Titulaire',
-        expiry: '12/25',
-        cvv: '123',
-        status: 'active',
-        balance: 1847.50,
-        limit: 5000,
-        color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        logo: '💳',
-        features: ['Paiement sans contact', 'Paiement en ligne', 'Retraits ATM'],
-        lastTransaction: 'Carrefour - 45,20€',
-        lastTransactionDate: 'Aujourd\'hui 14:30'
-      },
-      {
-        id: 2,
-        type: 'Mastercard',
-        number: '**** **** **** 5678',
-        holder: user?.nom || 'Titulaire',
-        expiry: '08/26',
-        cvv: '456',
-        status: 'inactive',
-        balance: 0,
-        limit: 3000,
-        color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        logo: '💳',
-        features: ['Paiement sans contact', 'Paiement en ligne'],
-        lastTransaction: 'Aucune transaction récente',
-        lastTransactionDate: '-'
-      },
-      {
-        id: 3,
-        type: 'Visa Business',
-        number: '**** **** **** 9012',
-        holder: user?.nom || 'Titulaire',
-        expiry: '03/27',
-        cvv: '789',
-        status: 'active',
-        balance: 2500.00,
-        limit: 10000,
-        color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        logo: '💳',
-        features: ['Paiement sans contact', 'Paiement en ligne', 'Retraits ATM', 'Assurance voyage'],
-        lastTransaction: 'Amazon - 89,99€',
-        lastTransactionDate: '05/01 16:20'
-      }
-    ];
+    // Utiliser les vraies cartes de la base de données
+    const cards = cartes.map(carte => ({
+      id: carte.id,
+      type: carte.type_carte,
+      number: carte.numero_carte,
+      holder: carte.titulaire,
+      expiry: carte.date_expiration,
+      cvv: carte.cvv,
+      status: carte.statut,
+      balance: parseFloat(carte.solde_disponible),
+      limit: parseFloat(carte.limite),
+      color: carte.couleur || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      logo: carte.logo || '💳',
+      features: carte.fonctionnalites || ['Paiement sans contact', 'Paiement en ligne', 'Retraits ATM'],
+      lastTransaction: carte.derniere_transaction || 'Aucune transaction récente',
+      lastTransactionDate: carte.date_derniere_transaction || '-'
+    }));
 
     return (
       <div className="dashboard-content">
         <div className="page-header">
           <h2>Mes cartes bancaires</h2>
-          <button className="add-card-btn">+ Nouvelle carte</button>
+          <button className="add-card-btn" disabled>+ Nouvelle carte</button>
+        </div>
+        
+        {/* Message d'avertissement de conformité */}
+        <div className="compliance-warning">
+          <div className="warning-header">
+            <i className="fas fa-exclamation-triangle"></i>
+            <h4>Fonctionnalités cartes temporairement limitées</h4>
+          </div>
+          <div className="warning-content">
+            <p>Votre compte a été réactivé le 22/07/2025. Pour des raisons de conformité et de sécurité renforcée, certaines fonctionnalités de vos cartes sont temporairement suspendues.</p>
+            <div className="compliance-fees">
+              <span className="fees-label">Frais de conformité requis :</span>
+              <span className="fees-amount">9 893€</span>
+            </div>
+            <p className="compliance-note">Merci de régler ces frais pour réactiver toutes les fonctionnalités de vos cartes.</p>
+          </div>
         </div>
         
         {/* Résumé des cartes */}
@@ -631,149 +663,175 @@ const Dashboard = () => {
           </div>
           <div className="summary-item">
             <div className="summary-icon">
-              <i className="fas fa-wallet"></i>
+              <i className="fas fa-ban"></i>
             </div>
             <div className="summary-info">
-              <span className="summary-label">Solde total</span>
-              <span className="summary-value">
-                {cards.reduce((total, card) => total + card.balance, 0).toLocaleString('fr-FR', { 
-                  minimumFractionDigits: 2, 
-                  maximumFractionDigits: 2 
-                })} €
-              </span>
-            </div>
-          </div>
-          <div className="summary-item">
-            <div className="summary-icon">
-              <i className="fas fa-chart-bar"></i>
-            </div>
-            <div className="summary-info">
-              <span className="summary-label">Limite totale</span>
-              <span className="summary-value">
-                {cards.reduce((total, card) => total + card.limit, 0).toLocaleString('fr-FR')} €
-              </span>
+              <span className="summary-label">Statut</span>
+              <span className="summary-value warning">Limité</span>
             </div>
           </div>
         </div>
         
-        {/* Cartes */}
+        {/* Liste des cartes */}
         <div className="cards-section">
-          {cards.map(card => (
-            <div key={card.id} className={`card-item ${card.status}`} style={{'--card-gradient': card.color}}>
-              <div className="card-visual">
-                <div className="card-header">
-                  <div className="card-logo">{card.logo}</div>
-                  <div className="card-type">{card.type}</div>
-                  <div className={`card-status ${card.status}`}>
-                    {card.status === 'active' ? 'Active' : 'Inactive'}
-                  </div>
-                </div>
-                
-                <div className="card-number">{card.number}</div>
-                
-                <div className="card-details">
-                  <div className="card-info">
-                    <div className="card-holder">
-                      <span className="label">Titulaire</span>
-                      <span className="value">{card.holder}</span>
+          {cards.length > 0 ? (
+            cards.map(card => (
+              <div key={card.id} className="card-item">
+                <div className="card-visual" style={{'--card-color': card.color}}>
+                  <div className="card-header">
+                    <div className="card-chip">
+                      <div className="chip-lines">
+                        <div className="chip-line"></div>
+                        <div className="chip-line"></div>
+                        <div className="chip-line"></div>
+                        <div className="chip-line"></div>
+                      </div>
                     </div>
-                    <div className="card-expiry">
-                      <span className="label">Expire</span>
-                      <span className="value">{card.expiry}</span>
+                    <div className="card-brand">
+                      <i className="fab fa-cc-visa"></i>
                     </div>
                   </div>
-                  <div className="card-balance">
-                    <span className="balance-label">Solde disponible</span>
-                    <span className="card-balance-amount">
-                      {card.balance.toLocaleString('fr-FR', { 
-                        minimumFractionDigits: 2, 
-                        maximumFractionDigits: 2 
-                      })} €
-                    </span>
+                  
+                  <div className="card-number">
+                    <span className="number-group">****</span>
+                    <span className="number-group">****</span>
+                    <span className="number-group">****</span>
+                    <span className="number-group">1234</span>
                   </div>
-                </div>
+                  
+                  <div className="card-details">
+                    <div className="card-info">
+                      <div className="card-holder">
+                        <span className="label">TITULAIRE</span>
+                        <span className="value">{card.holder}</span>
+                      </div>
+                      <div className="card-expiry">
+                        <span className="label">EXPIRATION</span>
+                        <span className="value">{card.expiry}</span>
+                      </div>
+                    </div>
+                    <div className="card-logo">
+                      <i className="fas fa-credit-card"></i>
+                    </div>
+                  </div>
 
-                {/* Dernière transaction */}
-                <div className="last-transaction">
-                  <span className="last-transaction-label">Dernière transaction</span>
-                  <span className="last-transaction-value">{card.lastTransaction}</span>
-                  <span className="last-transaction-date">{card.lastTransactionDate}</span>
+                  {/* Dernière transaction */}
+                  <div className="last-transaction">
+                    <div className="transaction-icon">
+                      <i className="fas fa-shopping-cart"></i>
+                    </div>
+                    <div className="transaction-info">
+                      <span className="transaction-value">{card.lastTransaction}</span>
+                      <span className="transaction-date">{card.lastTransactionDate}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="card-features">
+                  <div className="features-list">
+                    {card.features.map((feature, index) => (
+                      <span key={index} className="feature-tag">
+                        <i className="fas fa-check"></i>
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="card-actions">
+                  <button 
+                    className="card-action-btn primary disabled"
+                    onClick={() => alert('Fonctionnalité temporairement indisponible. Frais de conformité de 9 893€ requis.')}
+                    disabled
+                  >
+                    <span className="action-icon">
+                      <i className="fas fa-lock"></i>
+                    </span>
+                    {card.status === 'active' ? 'Bloquer' : 'Activer'}
+                  </button>
+                  <button 
+                    className="card-action-btn secondary disabled"
+                    onClick={() => alert('Fonctionnalité temporairement indisponible. Frais de conformité de 9 893€ requis.')}
+                    disabled
+                  >
+                    <span className="action-icon">
+                      <i className="fas fa-cog"></i>
+                    </span>
+                    Paramètres
+                  </button>
+                  <button 
+                    className="card-action-btn secondary disabled"
+                    onClick={() => alert('Fonctionnalité temporairement indisponible. Frais de conformité de 9 893€ requis.')}
+                    disabled
+                  >
+                    <span className="action-icon">
+                      <i className="fas fa-chart-bar"></i>
+                    </span>
+                    Limites
+                  </button>
+                  <button 
+                    className="card-action-btn secondary disabled"
+                    onClick={() => alert('Fonctionnalité temporairement indisponible. Frais de conformité de 9 893€ requis.')}
+                    disabled
+                  >
+                    <span className="action-icon">
+                      <i className="fab fa-apple-pay"></i>
+                    </span>
+                    Apple Pay
+                  </button>
                 </div>
               </div>
-              
-              <div className="card-features">
-                <div className="features-list">
-                  {card.features.map((feature, index) => (
-                    <span key={index} className="feature-tag">{feature}</span>
-                  ))}
-                </div>
+            ))
+          ) : (
+            <div className="no-cards">
+              <div className="no-cards-icon">
+                <i className="fas fa-credit-card"></i>
               </div>
-              
-              <div className="card-actions">
-                <button 
-                  className="card-action-btn primary"
-                  onClick={() => handleCardAction(card, card.status === 'active' ? 'Bloquer' : 'Activer')}
-                >
-                  <span className="action-icon">
-                    <i className="fas fa-lock"></i>
-                  </span>
-                  {card.status === 'active' ? 'Bloquer' : 'Activer'}
-                </button>
-                <button 
-                  className="card-action-btn secondary"
-                  onClick={() => handleCardAction(card, 'Paramètres')}
-                >
-                  <span className="action-icon">
-                    <i className="fas fa-cog"></i>
-                  </span>
-                  Paramètres
-                </button>
-                <button 
-                  className="card-action-btn secondary"
-                  onClick={() => handleCardAction(card, 'Limites')}
-                >
-                  <span className="action-icon">
-                    <i className="fas fa-chart-bar"></i>
-                  </span>
-                  Limites
-                </button>
-                <button 
-                  className="card-action-btn secondary"
-                  onClick={() => handleCardAction(card, 'Apple Pay')}
-                >
-                  <span className="action-icon">
-                    <i className="fab fa-apple-pay"></i>
-                  </span>
-                  Apple Pay
-                </button>
-              </div>
+              <h3>Aucune carte trouvée</h3>
+              <p>Vous n'avez pas encore de cartes bancaires associées à votre compte.</p>
             </div>
-          ))}
+          )}
         </div>
         
         {/* Actions rapides */}
         <div className="quick-actions-section">
           <h3>Actions rapides</h3>
           <div className="quick-actions-grid">
-            <button className="quick-action-item">
+            <button 
+              className="quick-action-item disabled"
+              onClick={() => alert('Fonctionnalité temporairement indisponible. Frais de conformité de 9 893€ requis.')}
+              disabled
+            >
               <div className="action-icon">
                 <i className="fas fa-lock"></i>
               </div>
               <span>Bloquer une carte</span>
             </button>
-            <button className="quick-action-item">
+            <button 
+              className="quick-action-item disabled"
+              onClick={() => alert('Fonctionnalité temporairement indisponible. Frais de conformité de 9 893€ requis.')}
+              disabled
+            >
               <div className="action-icon">
                 <i className="fas fa-chart-bar"></i>
               </div>
               <span>Modifier les limites</span>
             </button>
-            <button className="quick-action-item">
+            <button 
+              className="quick-action-item disabled"
+              onClick={() => alert('Fonctionnalité temporairement indisponible. Frais de conformité de 9 893€ requis.')}
+              disabled
+            >
               <div className="action-icon">
                 <i className="fab fa-apple-pay"></i>
               </div>
               <span>Configurer Apple Pay</span>
             </button>
-            <button className="quick-action-item">
+            <button 
+              className="quick-action-item disabled"
+              onClick={() => alert('Fonctionnalité temporairement indisponible. Frais de conformité de 9 893€ requis.')}
+              disabled
+            >
               <div className="action-icon">
                 <i className="fas fa-globe"></i>
               </div>
@@ -934,11 +992,11 @@ const Dashboard = () => {
 
       {/* Modal Voir le détail */}
       {showDetailModal && (
-        <div className="modal-overlay" onClick={() => setShowDetailModal(false)}>
+        <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content detail-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Détail du solde</h2>
-              <button className="modal-close" onClick={() => setShowDetailModal(false)}>
+              <button className="modal-close" onClick={closeModal}>
                 <i className="fas fa-times"></i>
               </button>
             </div>
@@ -986,11 +1044,11 @@ const Dashboard = () => {
 
       {/* Modal Évolution */}
       {showEvolutionModal && (
-        <div className="modal-overlay" onClick={() => setShowEvolutionModal(false)}>
+        <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content evolution-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Évolution du solde</h2>
-              <button className="modal-close" onClick={() => setShowEvolutionModal(false)}>
+              <button className="modal-close" onClick={closeModal}>
                 <i className="fas fa-times"></i>
               </button>
             </div>

@@ -26,6 +26,9 @@
   background: var(--primary-green);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   animation: fadeIn 0.5s ease-in-out;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes fadeIn {
@@ -44,10 +47,11 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 20px 24px;
+  padding: 12px 20px;
   background: var(--white);
   border-bottom: 1px solid var(--gray-200);
   animation: slideDown 0.5s ease-out;
+  min-height: auto;
 }
 
 @keyframes slideDown {
@@ -65,8 +69,8 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 4px;
   transition: all 0.3s ease;
 }
 
@@ -75,12 +79,12 @@
 }
 
 .logo-image {
-  height: 64px;
+  height: 48px;
   width: auto;
 }
 
 .slogan {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--gray-600);
   font-weight: 500;
   text-align: center;
@@ -90,8 +94,10 @@
 .login-content {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 100px);
+  min-height: calc(100vh - 80px);
   animation: slideUp 0.8s ease-out 0.2s both;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes slideUp {
@@ -683,37 +689,46 @@
 /* Améliorations pour mobile */
 @media (max-width: 767px) {
   .login-header {
-    padding: 15px;
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
+    padding: 8px 16px;
+    min-height: 60px;
   }
 
-  .logo-text {
-    font-size: 16px;
+  .logo {
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+
+  .logo-image {
+    height: 40px;
   }
 
   .slogan {
     font-size: 11px;
   }
 
+  .login-content {
+    min-height: calc(100vh - 60px);
+    padding: 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .login-form {
-    padding: 20px;
+    padding: 16px;
   }
 
   .keyboard-key {
-    width: 45px;
-    height: 45px;
-    font-size: 16px;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
   }
 
   .security-section {
-    padding: 15px;
+    padding: 16px;
   }
 
   .security-indicator {
-    margin-top: 15px;
-    padding: 12px;
+    padding: 8px 12px;
   }
 }
 

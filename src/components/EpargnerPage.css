@@ -452,3 +452,171 @@
   outline: 2px solid var(--primary-green);
   outline-offset: 2px;
 } 
+
+/* Message d'erreur de conformité */
+.compliance-error {
+  text-align: center;
+  padding: 20px;
+}
+
+.error-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.error-header i {
+  font-size: 48px;
+  color: #dc3545;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 16px;
+  border-radius: 50%;
+  border: 3px solid rgba(220, 53, 69, 0.3);
+}
+
+.error-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #dc3545;
+  margin: 0;
+}
+
+.error-content {
+  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+  border: 2px solid #feb2b2;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.compliance-message p {
+  font-size: 16px;
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.compliance-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.compliance-fees-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 2px solid #feb2b2;
+}
+
+.fees-title {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 16px;
+}
+
+.fees-value {
+  font-weight: 700;
+  color: #dc3545;
+  font-size: 24px;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 2px solid rgba(220, 53, 69, 0.3);
+}
+
+.compliance-reason {
+  text-align: left;
+}
+
+.compliance-reason h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 12px;
+}
+
+.compliance-reason ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.compliance-reason li {
+  padding: 8px 0;
+  color: #4a5568;
+  font-size: 14px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.compliance-reason li::before {
+  content: "⚠️";
+  position: absolute;
+  left: 0;
+  top: 8px;
+}
+
+.compliance-action {
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid #feb2b2;
+}
+
+.compliance-action p {
+  font-weight: 600;
+  color: #dc3545;
+  margin-bottom: 16px;
+}
+
+.contact-support-btn {
+  background: linear-gradient(135deg, #dc3545 0%, #c53030 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.contact-support-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.contact-support-btn i {
+  font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .error-header h2 {
+    font-size: 20px;
+  }
+  
+  .compliance-fees-display {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .fees-value {
+    font-size: 20px;
+  }
+  
+  .contact-support-btn {
+    width: 100%;
+    justify-content: center;
+  }
+} 
