@@ -148,36 +148,7 @@ const Dashboard = () => {
     avatar: 'https://cdn-icons-png.flaticon.com/512/6676/6676023.png'
   };
 
-  // Notifications simulées
-  useEffect(() => {
-    const mockNotifications = [
-      {
-        id: 1,
-        type: 'security',
-        title: 'Connexion détectée',
-        message: 'Nouvelle connexion depuis Paris',
-        time: 'Il y a 5 min',
-        read: false
-      },
-      {
-        id: 2,
-        type: 'transaction',
-        title: 'Transaction importante',
-        message: 'Paiement de 120€ à EDF',
-        time: 'Il y a 1h',
-        read: false
-      },
-      {
-        id: 3,
-        type: 'info',
-        title: 'Maintenance prévue',
-        message: 'Maintenance le 25/01 de 2h à 4h',
-        time: 'Il y a 2h',
-        read: true
-      }
-    ];
-    setNotifications(mockNotifications);
-  }, []);
+  // Les notifications sont maintenant chargées depuis la base de données dans loadDashboardData
 
   // Gestion du mode sombre
   useEffect(() => {
@@ -364,40 +335,56 @@ const Dashboard = () => {
           <button className="see-all-btn" onClick={() => setActiveTab('historique')}>Voir tout</button>
         </div>
         <div className="transactions-list">
-          {recentTransactions.map(transaction => (
-            <div key={transaction.id} className="transaction-item">
-              <div className="transaction-icon" style={{'--transaction-color': transaction.type === 'credit' || transaction.type === 'virement_entrant' ? '#00A651' : '#FF6B35'}}>
-                <i className={transaction.icon || 'fas fa-exchange-alt'}></i>
-              </div>
-              <div className="transaction-details">
-                <div className="transaction-main">
-                  <span className="transaction-description">{transaction.description}</span>
-                  <span className="transaction-category">{transaction.categorie || 'Transfert'}</span>
-                  <span className="transaction-location">{transaction.localisation || 'Virement bancaire'}</span>
+          {recentTransactions.map(transaction => {
+            // Utiliser le même mapping que la page historique pour la cohérence
+            const mappedTransaction = {
+              id: transaction.id,
+              type: transaction.type === 'credit' || transaction.type === 'virement_entrant' ? 'credit' : 'debit',
+              amount: transaction.type === 'credit' || transaction.type === 'virement_entrant' ? 
+                parseFloat(transaction.montant) : -parseFloat(transaction.montant),
+              description: transaction.description,
+              category: transaction.categorie || 'Transfert',
+              date: new Date(transaction.date_transaction).toLocaleDateString('fr-FR'),
+              time: transaction.heure_transaction,
+              icon: transaction.icon || 'fas fa-exchange-alt',
+              location: transaction.localisation || 'Virement bancaire',
+              status: transaction.statut === 'completed' || transaction.statut === 'traite' ? 'completed' : 
+                      transaction.statut === 'en_attente' || transaction.statut === 'en_validation' ? 'pending' : 'completed'
+            };
+
+            return (
+              <div key={mappedTransaction.id} className="transaction-item">
+                <div className="transaction-icon" style={{'--transaction-color': mappedTransaction.type === 'credit' ? '#00A651' : '#FF6B35'}}>
+                  <i className={mappedTransaction.icon}></i>
                 </div>
-                <div className="transaction-meta">
-                  <span className="transaction-date">
-                    {new Date(transaction.date_transaction).toLocaleDateString('fr-FR')} à {transaction.heure_transaction}
-                  </span>
-                  <span className={`transaction-status ${transaction.statut}`}>
-                    {transaction.statut === 'completed' || transaction.statut === 'traite' ? 
-                      <><i className="fas fa-check-circle"></i> Terminé</> : 
-                      transaction.statut === 'en_attente' || transaction.statut === 'en_validation' ?
-                      <><i className="fas fa-clock"></i> En cours</> :
-                      <><i className="fas fa-exclamation-triangle"></i> En attente</>
-                    }
-                  </span>
+                <div className="transaction-details">
+                  <div className="transaction-main">
+                    <span className="transaction-description">{mappedTransaction.description}</span>
+                    <span className="transaction-category">{mappedTransaction.category}</span>
+                    <span className="transaction-location">{mappedTransaction.location}</span>
+                  </div>
+                  <div className="transaction-meta">
+                    <span className="transaction-date">{mappedTransaction.date} à {mappedTransaction.time}</span>
+                    <span className={`transaction-status ${mappedTransaction.status}`}>
+                      {mappedTransaction.status === 'completed' ? 
+                        <><i className="fas fa-check-circle"></i> Terminé</> : 
+                        mappedTransaction.status === 'pending' ?
+                        <><i className="fas fa-clock"></i> En cours</> :
+                        <><i className="fas fa-exclamation-triangle"></i> En attente</>
+                      }
+                    </span>
+                  </div>
+                </div>
+                <div className={`transaction-amount ${mappedTransaction.type}`}>
+                  {(mappedTransaction.type === 'credit' ? '+' : '-')}
+                  {Math.abs(mappedTransaction.amount).toLocaleString('fr-FR', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                  })} €
                 </div>
               </div>
-              <div className={`transaction-amount ${transaction.type === 'credit' || transaction.type === 'virement_entrant' ? 'credit' : 'debit'}`}>
-                {(transaction.type === 'credit' || transaction.type === 'virement_entrant') ? '+' : '-'}
-                {Math.abs(parseFloat(transaction.montant)).toLocaleString('fr-FR', { 
-                  minimumFractionDigits: 2, 
-                  maximumFractionDigits: 2 
-                })} {transaction.devise || '€'}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -447,9 +434,6 @@ const Dashboard = () => {
       <div className="conseiller-section">
         <div className="section-header">
           <h3>Conseiller client</h3>
-          <button className="contact-btn" onClick={() => alert('Ouverture du chat avec le conseiller')}>
-            <i className="fas fa-comments"></i> Contacter
-          </button>
         </div>
         <div className="conseiller-card">
           <div className="conseiller-avatar">
