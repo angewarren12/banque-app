@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { comptesService } from '../services/comptesService';
@@ -69,7 +69,7 @@ const Dashboard = () => {
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [totalBalance, setTotalBalance] = useState(0);
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setIsLoading(true);
       
@@ -104,7 +104,7 @@ const Dashboard = () => {
       console.error('Erreur lors du chargement des données:', error);
       setIsLoading(false);
     }
-  };
+  }, [navigate, comptesService, transactionsService, notificationsService]);
 
   // Charger les données au montage du composant
   useEffect(() => {
@@ -112,12 +112,12 @@ const Dashboard = () => {
   }, [loadDashboardData]);
 
   // Fonction de rafraîchissement des données
-  const refreshDashboardData = async () => {
+  const refreshDashboardData = useCallback(async () => {
     console.log('🔄 DASH DEBUG: Rafraîchissement des données du dashboard');
     setIsRefreshing(true);
     await loadDashboardData();
     setIsRefreshing(false);
-  };
+  }, [loadDashboardData]);
 
   const quickActions = [
     { id: 1, title: 'Virement', color: '#008854', icon: 'fas fa-exchange-alt', action: () => setShowVirement(true) },
