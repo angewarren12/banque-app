@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { comptesService } from '../services/comptesService';
 import { transactionsService } from '../services/transactionsService';
-import { beneficiairesService } from '../services/beneficiairesService';
 import { notificationsService } from '../services/notificationsService';
 import './Dashboard.css';
 import VirementPage from './VirementPage';
@@ -22,8 +21,6 @@ const Dashboard = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [showCardDetails, setShowCardDetails] = useState(false);
   
   // États pour les modales
   const [showVirement, setShowVirement] = useState(false);
@@ -33,7 +30,7 @@ const Dashboard = () => {
   const [showBeneficiaires, setShowBeneficiaires] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEvolutionModal, setShowEvolutionModal] = useState(false);
-  const [savingsData, setSavingsData] = useState([
+  const [savingsData] = useState([
     {
       id: 1,
       type: 'Livret A',
@@ -72,19 +69,6 @@ const Dashboard = () => {
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [totalBalance, setTotalBalance] = useState(0);
 
-  // Charger les données au montage du composant
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  // Fonction de rafraîchissement des données
-  const refreshDashboardData = async () => {
-    console.log('🔄 DASH DEBUG: Rafraîchissement des données du dashboard');
-    setIsRefreshing(true);
-    await loadDashboardData();
-    setIsRefreshing(false);
-  };
-
   const loadDashboardData = async () => {
     try {
       setIsLoading(true);
@@ -122,15 +106,17 @@ const Dashboard = () => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await authService.signOut();
-      localStorage.removeItem('user');
-      localStorage.removeItem('isAuthenticated');
-      navigate('/');
-    } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error);
-    }
+  // Charger les données au montage du composant
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
+
+  // Fonction de rafraîchissement des données
+  const refreshDashboardData = async () => {
+    console.log('🔄 DASH DEBUG: Rafraîchissement des données du dashboard');
+    setIsRefreshing(true);
+    await loadDashboardData();
+    setIsRefreshing(false);
   };
 
   const quickActions = [
@@ -202,12 +188,8 @@ const Dashboard = () => {
   };
 
   const handleCardAction = (card, action) => {
-    setSelectedCard(card);
-    setShowCardDetails(true);
     setTimeout(() => {
       alert(`Action ${action} pour la carte ${card.type}`);
-      setShowCardDetails(false);
-      setSelectedCard(null);
     }, 500);
   };
 

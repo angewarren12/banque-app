@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { virementsService } from '../services/virementsService';
 import { comptesService } from '../services/comptesService';
-import { beneficiairesService } from '../services/beneficiairesService';
 import './VirementPage.css';
 import BeneficiairesPage from './BeneficiairesPage';
 
