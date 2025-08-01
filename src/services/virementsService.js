@@ -2,6 +2,7 @@ import { supabase } from '../config/supabase';
 import { comptesService } from './comptesService';
 import { transactionsService } from './transactionsService';
 import { notificationsService } from './notificationsService';
+import { emailService } from './emailService';
 
 // Debug des imports
 console.log('🔍 VIR DEBUG: transactionsService importé:', transactionsService);
@@ -78,6 +79,40 @@ export const virementsService = {
       await comptesService.updateSolde(virement.compte_source_id, nouveauSolde);
       console.log('✅ VIR DEBUG: Solde mis à jour:', nouveauSolde);
 
+      // RÉCUPÉRER L'EMAIL DU BÉNÉFICIAIRE
+      let beneficiaireEmail = null;
+      try {
+        const { data: beneficiaire, error: beneficiaireError } = await supabase
+          .from('beneficiaires')
+          .select('email, nom, prenom')
+          .eq('id', virement.beneficiaire_id)
+          .single();
+
+        if (!beneficiaireError && beneficiaire) {
+          beneficiaireEmail = beneficiaire.email;
+          console.log('📧 VIR DEBUG: Email du bénéficiaire récupéré:', beneficiaireEmail);
+        } else {
+          console.warn('⚠️ VIR DEBUG: Aucun email trouvé pour le bénéficiaire');
+        }
+      } catch (error) {
+        console.error('❌ VIR DEBUG: Erreur récupération email bénéficiaire:', error);
+      }
+
+      // ENVOYER L'EMAIL DE NOTIFICATION AU MOMENT DE LA DÉDUCTION
+      try {
+        console.log('📧 VIR DEBUG: Envoi email de notification de virement');
+        const virementDataWithEmail = {
+          ...virement,
+          beneficiaire_email: beneficiaireEmail
+        };
+        await emailService.sendVirementNotification(virement.user_id, virementDataWithEmail);
+        console.log('✅ VIR DEBUG: Email de notification envoyé avec succès');
+      } catch (emailError) {
+        console.error('❌ VIR DEBUG: Erreur lors de l\'envoi de l\'email:', emailError);
+        // Ne pas faire échouer le virement si l'email échoue
+        // L'email peut être renvoyé plus tard
+      }
+
       // Créer la transaction avec statut "en_attente"
       const transactionData = {
         type: 'virement_sortant',
@@ -123,6 +158,16 @@ export const virementsService = {
             'Erreur de virement',
             'Une erreur est survenue lors du traitement de votre virement. Veuillez contacter le support.'
           );
+          
+          // Envoyer un email d'erreur également
+          try {
+            await emailService.sendVirementErrorNotification(
+              virement.user_id, 
+              error.message || 'Erreur lors du traitement du virement'
+            );
+          } catch (emailError) {
+            console.error('❌ VIR DEBUG: Erreur envoi email d\'erreur:', emailError);
+          }
         } catch (notifError) {
           console.error('❌ VIR DEBUG: Erreur création notification:', notifError);
         }

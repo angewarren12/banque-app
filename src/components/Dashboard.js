@@ -225,10 +225,10 @@ const Dashboard = () => {
       <div className="welcome-header">
         <div className="welcome-text">
           <div className="welcome-line">
-            <h1>Bonjour, {user?.nom || 'Utilisateur'}</h1>
-            <button className="profile-avatar" onClick={() => alert('Redirection vers le profil')}>
+            <button className="profile-avatar" onClick={() => setActiveTab('profile')}>
               <span>{user?.nom?.charAt(0) || 'U'}</span>
             </button>
+            <h1>Bonjour, {user?.nom || 'Utilisateur'}</h1>
           </div>
           <p>Voici un aperçu de vos finances</p>
           <div className="login-info">
@@ -589,6 +589,135 @@ const Dashboard = () => {
     );
   };
 
+  const renderProfile = () => (
+    <div className="dashboard-content">
+      <div className="page-header">
+        <h2>Mon Profil</h2>
+        <button className="edit-profile-btn" onClick={() => alert('Fonctionnalité d\'édition en cours de développement')}>
+          <i className="fas fa-edit"></i> Modifier
+        </button>
+      </div>
+
+      {/* Informations personnelles */}
+      <div className="profile-section">
+        <div className="profile-header">
+          <div className="profile-avatar-large">
+            <span>{user?.nom?.charAt(0) || 'U'}</span>
+          </div>
+          <div className="profile-info">
+            <h3>{user?.nom || 'Utilisateur'}</h3>
+            <p className="profile-role">Client BNP Paribas</p>
+            <p className="profile-number">N° Client: {user?.numero_client || 'N/A'}</p>
+          </div>
+        </div>
+
+        <div className="profile-details">
+          <div className="detail-group">
+            <h4>Informations personnelles</h4>
+            <div className="detail-item">
+              <span className="detail-label">Nom complet</span>
+              <span className="detail-value">{user?.nom || 'Non renseigné'}</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Prénom</span>
+              <span className="detail-value">{user?.prenom || 'Non renseigné'}</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Email</span>
+              <span className="detail-value">{user?.email || 'Non renseigné'}</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Téléphone</span>
+              <span className="detail-value">{user?.telephone || 'Non renseigné'}</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Adresse</span>
+              <span className="detail-value">{user?.adresse || 'Italy - Bologne'}</span>
+            </div>
+          </div>
+
+          <div className="detail-group">
+            <h4>Informations bancaires</h4>
+            <div className="detail-item">
+              <span className="detail-label">Numéro client</span>
+              <span className="detail-value">{user?.numero_client || 'N/A'}</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Code secret</span>
+              <span className="detail-value">••••••</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Date d'inscription</span>
+              <span className="detail-value">{user?.date_inscription ? new Date(user.date_inscription).toLocaleDateString('fr-FR') : 'N/A'}</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Statut du compte</span>
+              <span className="detail-value status-active">Actif</span>
+            </div>
+          </div>
+
+          <div className="detail-group">
+            <h4>Sécurité</h4>
+            <div className="detail-item">
+              <span className="detail-label">Dernière connexion</span>
+              <span className="detail-value">{getCurrentDateTime()}</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Authentification à deux facteurs</span>
+              <span className="detail-value status-active">Activée</span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Notifications de sécurité</span>
+              <span className="detail-value status-active">Activées</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Actions rapides */}
+      <div className="profile-actions">
+        <h4>Actions rapides</h4>
+        <div className="actions-grid">
+          <button className="action-btn" onClick={() => alert('Fonctionnalité en cours de développement')}>
+            <i className="fas fa-key"></i>
+            <span>Changer le mot de passe</span>
+          </button>
+          <button className="action-btn" onClick={() => alert('Fonctionnalité en cours de développement')}>
+            <i className="fas fa-bell"></i>
+            <span>Gérer les notifications</span>
+          </button>
+          <button className="action-btn" onClick={() => alert('Fonctionnalité en cours de développement')}>
+            <i className="fas fa-shield-alt"></i>
+            <span>Paramètres de sécurité</span>
+          </button>
+          <button className="action-btn" onClick={() => alert('Fonctionnalité en cours de développement')}>
+            <i className="fas fa-download"></i>
+            <span>Exporter mes données</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Conseiller client */}
+      <div className="profile-conseiller">
+        <h4>Mon conseiller client</h4>
+        <div className="conseiller-card-profile">
+          <div className="conseiller-avatar">
+            <img src={conseillerClient.avatar} alt={conseillerClient.name} />
+          </div>
+          <div className="conseiller-info">
+            <h5>{conseillerClient.name}</h5>
+            <span className="conseiller-role">{conseillerClient.role}</span>
+            <div className="conseiller-contact">
+              <span className="contact-item">
+                <i className="fas fa-envelope"></i> {conseillerClient.email}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderCartes = () => {
     // Utiliser les vraies cartes de la base de données
     const cards = cartes.map(carte => ({
@@ -832,6 +961,8 @@ const Dashboard = () => {
         return renderHistorique();
       case 'cartes':
         return renderCartes();
+      case 'profile':
+        return renderProfile();
       default:
         return renderAccueil();
     }
