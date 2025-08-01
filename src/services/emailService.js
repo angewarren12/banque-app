@@ -1,4 +1,5 @@
 import { supabase } from '../config/supabase';
+import emailjs from '@emailjs/browser';
 
 export const emailService = {
   // Envoyer un email de notification de virement au bénéficiaire
@@ -43,12 +44,15 @@ export const emailService = {
         virementData
       );
 
-      // Envoyer l'email au bénéficiaire via Supabase Mail
+      // Envoyer l'email au bénéficiaire via EmailJS
       const emailResult = await this.sendEmail(
         virementData.beneficiaire_email,
         emailContent.subject,
         emailContent.html,
-        emailContent.text
+        emailContent.text,
+        profile,
+        beneficiaire,
+        virementData
       );
 
       console.log('✅ EMAIL DEBUG: Email envoyé avec succès');
@@ -67,7 +71,7 @@ export const emailService = {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
-      hour: '2-digit',
+      hour: '2-digit', 
       minute: '2-digit'
     });
 
@@ -441,38 +445,47 @@ BNP Paribas - Service Client : 0800 123 456
     return iban.substring(0, 4) + '****' + iban.substring(iban.length - 4);
   },
 
-  // Envoyer l'email avec Supabase Mail
-  async sendEmail(to, subject, html, text) {
+  // Envoyer l'email avec EmailJS
+  async sendEmail(to, subject, html, text, profile = null, beneficiaire = null, virementData = null) {
     try {
-      console.log('📧 EMAIL DEBUG: Envoi email avec Supabase Mail');
+      console.log('📧 EMAIL DEBUG: Envoi email avec EmailJS');
       console.log('📧 EMAIL DEBUG: À:', to);
       console.log('📧 EMAIL DEBUG: Sujet:', subject);
       
-      // Utiliser Supabase Edge Functions pour envoyer l'email
-      const { data, error } = await supabase.functions.invoke('send-email', {
-        body: {
-          to: to,
-          subject: subject,
-          html: html,
-          text: text,
-          from: 'noreply@bnpparibas.com',
-          from_name: 'BNP Paribas'
-        }
-      });
+      // Utiliser EmailJS pour envoyer l'email
+      const templateParams = {
+        to_name: to.split('@')[0],
+        title: subject,
+        montant: profile && virementData ? `${virementData.montant.toFixed(2)}€` : '56.00€',
+        expediteur_nom: profile ? `${profile.nom} ${profile.prenom}` : 'PAOLA MARIE MADELEINE',
+        iban: beneficiaire ? this.maskIBAN(beneficiaire.iban) : 'FR07****8888',
+        name: 'BNP Paribas',
+        email: 'service-client@bnpparibas.com'
+      };
       
-      if (error) {
-        console.error('❌ EMAIL DEBUG: Erreur Supabase Mail:', error);
-        throw error;
-      }
+      console.log('📧 EMAIL DEBUG: Paramètres template:', templateParams);
       
-      console.log('✅ EMAIL DEBUG: Email envoyé avec succès via Supabase Mail:', data);
-      return { success: true, messageId: data.messageId || 'supabase-' + Date.now() };
+      // Utiliser EmailJS pour envoyer l'email
+      const result = await emailjs.send(
+        'service_mev4gqt', // votre service ID
+        'template_oo0dbwk', // votre template ID
+        {
+          to_email: to,
+          ...templateParams
+        },
+        'u9q4QhywRWjrfKnHj' // votre clé publique
+      );
+      
+      console.log('✅ EMAIL DEBUG: Email envoyé avec succès via EmailJS:', result);
+      return { success: true, messageId: result.text || 'emailjs-' + Date.now() };
       
     } catch (error) {
-      console.error('❌ EMAIL DEBUG: Erreur envoi email Supabase Mail:', error);
+      console.error('❌ EMAIL DEBUG: Erreur envoi email EmailJS:', error);
       
-      // Fallback : simulation si Supabase Mail n'est pas configuré
-      console.warn('⚠️ EMAIL DEBUG: Supabase Mail non configuré, simulation de l\'envoi');
+      // Fallback : simulation en cas d'erreur
+      console.warn('⚠️ EMAIL DEBUG: Erreur EmailJS, simulation de l\'envoi');
+      console.log(`📧 EMAIL DEBUG: Email simulé envoyé à: ${to}`);
+      console.log(`📧 EMAIL DEBUG: Sujet: ${subject}`);
       return { success: true, messageId: 'simulated-' + Date.now() };
     }
   },

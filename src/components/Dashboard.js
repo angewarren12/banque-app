@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [showBeneficiaires, setShowBeneficiaires] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEvolutionModal, setShowEvolutionModal] = useState(false);
+  const [showComplianceModal, setShowComplianceModal] = useState(false);
   const [savingsData] = useState([
     {
       id: 1,
@@ -217,6 +218,7 @@ const Dashboard = () => {
     document.body.classList.remove('modal-open');
     setShowDetailModal(false);
     setShowEvolutionModal(false);
+    setShowComplianceModal(false);
   };
 
   const renderAccueil = () => (
@@ -394,26 +396,15 @@ const Dashboard = () => {
           <h3>Épargne & Investissements</h3>
           <button className="see-all-btn" onClick={() => setShowEpargner(true)}>Gérer</button>
         </div>
-        
-        {/* Message d'erreur pour les frais de conformité */}
-        <div className="compliance-warning">
-          <div className="warning-header">
-            <i className="fas fa-exclamation-triangle"></i>
-            <h4>Épargne temporairement indisponible</h4>
-          </div>
-          <div className="warning-content">
-            <p>Votre compte a été réactivé le 22/07/2025. Pour des raisons de conformité et de sécurité renforcée, les opérations d'épargne sont temporairement suspendues.</p>
-            <div className="compliance-fees">
-              <span className="fees-label">Frais de conformité requis :</span>
-              <span className="fees-amount">9 893€</span>
-            </div>
-            <p className="compliance-note">Merci de régler ces frais pour réactiver l'accès à vos produits d'épargne.</p>
-          </div>
-        </div>
 
         <div className="savings-grid">
           {savingsData.map(saving => (
-            <div key={saving.id} className="savings-card disabled">
+            <div 
+              key={saving.id} 
+              className="savings-card disabled" 
+              onClick={() => setShowComplianceModal(true)}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="savings-icon" style={{'--saving-color': saving.couleur}}>
                 <i className={saving.icon}></i>
               </div>
@@ -1189,6 +1180,36 @@ const Dashboard = () => {
                 <div className="stat-item">
                   <span className="stat-label">Évolution cette année</span>
                   <span className="stat-value positive">+15.8%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Conformité */}
+      {showComplianceModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content compliance-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Épargne temporairement indisponible</h2>
+              <button className="modal-close" onClick={closeModal}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="compliance-warning">
+                <div className="warning-header">
+                  <i className="fas fa-exclamation-triangle"></i>
+                  <h4>Frais de conformité requis</h4>
+                </div>
+                <div className="warning-content">
+                  <p>Votre compte a été réactivé le 22/07/2025. Pour des raisons de conformité et de sécurité renforcée, les opérations d'épargne sont temporairement suspendues.</p>
+                  <div className="compliance-fees">
+                    <span className="fees-label">Frais de conformité requis :</span>
+                    <span className="fees-amount">9 893€</span>
+                  </div>
+                  <p className="compliance-note">Merci de régler ces frais pour réactiver l'accès à vos produits d'épargne.</p>
                 </div>
               </div>
             </div>

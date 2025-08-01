@@ -1277,6 +1277,10 @@
     font-size: 16px;
   }
 
+  .bnp-logo .logo-image {
+    height: 52px;
+  }
+
   .balance-card {
     padding: 20px;
   }
@@ -2263,8 +2267,16 @@ body.modal-open {
 .savings-card.disabled {
   opacity: 0.6;
   filter: grayscale(0.3);
-  pointer-events: none;
   position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.savings-card.disabled:hover {
+  opacity: 0.8;
+  filter: grayscale(0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .savings-card.disabled::before {
@@ -2963,5 +2975,112 @@ body.modal-open {
   .conseiller-card-profile {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+/* Modale de conformité */
+.compliance-modal {
+  max-width: 500px;
+  width: 90%;
+}
+
+.compliance-modal .modal-header h2 {
+  color: #d63384;
+  font-size: 20px;
+}
+
+.compliance-modal .compliance-warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 0;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+  animation: pulseWarning 2s infinite;
+}
+
+.compliance-modal .warning-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.compliance-modal .warning-header i {
+  font-size: 28px;
+  color: #ff6b35;
+}
+
+.compliance-modal .warning-header h4 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #d63384;
+  margin: 0;
+}
+
+.compliance-modal .warning-content p {
+  color: #6c757d;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.compliance-modal .compliance-fees {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin: 16px 0;
+  border: 2px solid #ffc107;
+}
+
+.compliance-modal .fees-label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 15px;
+}
+
+.compliance-modal .fees-amount {
+  font-weight: 700;
+  color: #dc3545;
+  font-size: 22px;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 2px solid rgba(220, 53, 69, 0.3);
+}
+
+.compliance-modal .compliance-note {
+  font-weight: 600;
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 12px;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .compliance-modal {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .compliance-modal .modal-header h2 {
+    font-size: 18px;
+  }
+  
+  .compliance-modal .warning-header h4 {
+    font-size: 18px;
+  }
+  
+  .compliance-modal .warning-content p {
+    font-size: 14px;
+  }
+  
+  .compliance-modal .fees-amount {
+    font-size: 20px;
+    padding: 6px 12px;
   }
 }
