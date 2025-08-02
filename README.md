@@ -23,7 +23,7 @@ Une application bancaire moderne et responsive développée avec React, simulant
 ### 💰 Gestion des Virements
 
 - **Création de bénéficiaires** avec validation IBAN
-- **Virements sécurisés** avec limite de 9 893€
+- **Virements sécurisés** avec limite de 100.000€
 - **Statuts de validation** : En cours, Terminé, En attente
 - **Notifications automatiques** pour les frais de conformité
 - **Historique complet** des opérations

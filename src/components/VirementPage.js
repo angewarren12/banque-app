@@ -67,8 +67,8 @@ const VirementPage = ({ onClose, onVirementCompleted }) => {
     }
     
     const montant = parseFloat(formData.montant);
-    if (montant > 9893) {
-      setError('Le montant maximum est de 9893€ pour les virements instantanés');
+    if (montant > 100000) {
+      setError('Le montant maximum est de 100.000€ pour les virements instantanés');
       return false;
     }
     
@@ -166,7 +166,7 @@ const VirementPage = ({ onClose, onVirementCompleted }) => {
           placeholder="0,00"
           step="0.01"
           min="0"
-          max="9893"
+          max="100000"
         />
       </div>
       

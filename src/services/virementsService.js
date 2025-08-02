@@ -263,7 +263,7 @@ export const virementsService = {
       if (error) throw error;
 
       const totalJour = data.reduce((sum, virement) => sum + parseFloat(virement.montant), 0);
-      const limiteJour = 9893; // 9893€ par jour
+      const limiteJour = 100000; // 100.000€ par jour
 
       return {
         totalJour,
